@@ -1,9 +1,8 @@
 #!perl
 
 use strict;
-use warnings;
 
-use Test::More tests => 15;
+use Test::More tests => 17;
 
 BEGIN { use_ok("Data::StackedMap"); }
 
@@ -45,3 +44,12 @@ eval {
     $data->pop();
 };
 like($@, qr/Can't pop single layer stack/);
+
+$data = Data::StackedMap->new({bar => 1});
+is($data->get("bar"), 1);
+
+$data = Data::StackedMap->new({a => 1});
+$data->push();
+$data->set(b => 2);
+my @keys = sort $data->keys;
+is_deeply(\@keys, ['a', 'b']);

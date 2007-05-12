@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:                Data-StackedMap
-version:             0.01
+version:             0.02
 abstract:            An object that stores key/value pairs in a stacked fashion
 license:             perl
 generated_by:        ExtUtils::MakeMaker version 6.32

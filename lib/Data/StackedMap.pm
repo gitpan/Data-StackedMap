@@ -2,21 +2,23 @@ package Data::StackedMap;
 
 use 5.00503;
 use strict;
-use warnings;
 
 use vars qw($VERSION);
 
-$VERSION = '0.01';
+$VERSION = '0.02';
 
 use strict;
-use warnings;
 
 use Carp qw(croak);
 
 sub new {
-    my ($pkg) = @_;
+    my ($pkg, $default) = @_;
     
-    my $self = bless [{}], $pkg;
+    my $self = bless [ {} ], $pkg;
+
+    if (ref $default eq 'HASH') {
+        %{$self->[-1]} = %$default;
+    }
     
     return $self;
 }
@@ -46,15 +48,21 @@ sub get {
     return;
 }
 
-sub set {
-    my ($self, $key, $value) = @_;
+sub keys {
+    my $self = shift;
     
-    $self->[-1]->{$key} = $value;
+    my %keys;
+    for my $layer (1..@$self) {
+        my @kkeys = CORE::keys %{$self->[-$layer]};
+        @keys{@kkeys} = (1) x scalar @kkeys;
+    }
+    return CORE::keys %keys;
 }
 
-sub push {
+sub top_keys {
     my $self = shift;
-    push @$self, {};
+    
+    return CORE::keys %{$self->[1]};
 }
 
 sub pop {
@@ -65,6 +73,17 @@ sub pop {
     }
 
     return pop @$self;
+}
+
+sub push {
+    my $self = shift;
+    push @$self, {};
+}
+
+sub set {
+    my ($self, $key, $value) = @_;
+    
+    $self->[-1]->{$key} = $value;
 }
 
 sub size {
@@ -108,9 +127,10 @@ layers in a stack.
 
 =over 4
 
-=item new ()
+=item new ( I<$default_hash> )
 
-Creates a new instance of this class. 
+Creates a new instance of this class. The first layer of the stack can be pre-populated by passing 
+a hash ref (I<$default_hash>) whos keys and values will be copied.
 
 =back
 
@@ -138,13 +158,21 @@ to find the value.
 
 Sets the value of I<$key> to I<$value>.
 
+=item keys ()
+
+Returns a list of the keys defined in all layers of the stack.
+
+=item top_keys ()
+
+Returns a list of the keys defined in just the top layer of the stack.
+
 =item push ()
 
 Creates a new current map in the stack.
 
 =item pop ()
 
-Removes the current stack entry. Will throw an error if called when there is only 
+Removes the current stack entry and returns it. Will throw an error if called when there is only 
 one map in the stack.
 
 =item size ()
