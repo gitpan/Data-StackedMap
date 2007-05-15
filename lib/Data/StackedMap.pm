@@ -5,7 +5,7 @@ use strict;
 
 use vars qw($VERSION);
 
-$VERSION = '0.02';
+$VERSION = '0.03';
 
 use strict;
 
@@ -85,6 +85,7 @@ sub set {
     
     $self->[-1]->{$key} = $value;
 }
+*put = \&set;
 
 sub size {
     my $self = shift;
@@ -155,6 +156,8 @@ Returns the value of I<$key> or undef it the key doesn't exist. Will search down
 to find the value.
 
 =item set ( $key => $value )
+
+=item put ( $key => $value ) 
 
 Sets the value of I<$key> to I<$value>.
 
